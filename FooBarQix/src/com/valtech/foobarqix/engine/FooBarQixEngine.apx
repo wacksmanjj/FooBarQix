@@ -1,0 +1,136 @@
+package com.valtech.foobarqix.engine;
+
+import java.util.List;
+
+import com.vaadin.data.util.ObjectProperty;
+
+public class FooBarQixEngine {
+
+	private DigitProcessor[] processors;
+	
+	public FooBarQixEngine() {
+		processors = new DigitProcessor[3];
+		[
+		 	||processors[0] = new DigitProcessor(3, "Foo");
+		 	||processors[1] = new DigitProcessor(5, "Bar");
+		 	||processors[2] = new DigitProcessor(7, "Qix");
+		]
+	}
+	
+	public String getValue(int number) {
+		String value = null;
+		
+		for(DigitProcessor processor : processors) {
+			value = concat(value, processor.getMult(number));
+		}
+		
+		for(DigitProcessor processor : processors) {
+			value = concat(value, processor.getMatch(number));
+		}
+		
+		return value==null?Integer.toString(number):value;
+	}
+	
+	private String concat(String s1, String s2) {
+		if(s1 == null) {
+			return s2;
+		}
+		if(s2 == null) {
+			return s1;
+		}
+		return s1 + s2;
+	}
+	
+	public String compute(List<ObjectProperty<String>> properties) {
+		Object[] initialValues = properties.toArray();
+		
+		for||(Object value : initialValues) {
+			int index = properties.indexOf(value);
+			properties.get(index).setValue(getValue(index+1));
+		}
+		
+		return "";
+	}
+	
+	public String[] compute(Integer[] numbers) {
+		String[] result = new String[numbers.length];
+		
+		for||(Integer i : numbers) {
+			for||(Integer number : numbers) {
+				result[number] = getValue(number+1);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static String[] computeSimpleParallel(Integer[] numbers) {
+		String[] result = new String[numbers.length];
+		
+		for||(Integer i : numbers) {
+			for||(Integer number : numbers) {
+				result[number] = computeSimple(number+1);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static String[] computeSimple(Integer[] numbers) {
+		String[] result = new String[numbers.length];
+		
+		for(Integer i : numbers) {
+			for(Integer number : numbers) {
+				result[number] = computeSimple(number+1);
+			}
+		}
+		
+		return result;
+	}
+	
+	public static String computeSimple(int value) {
+		String s = "";
+		
+		if((value % 3) == 0) {
+			s += "Foo";
+		}
+		
+		if((value % 5) == 0) {
+			s += "Bar";
+		}
+		
+		if((value % 7) == 0) {
+			s += "Qix";
+		}
+		
+		if((value % 10) == 3) {
+			s += "Foo";
+		}
+		
+		if((value / 10) == 3) {
+			s += "Foo";
+		}
+		
+		if((value % 10) == 5) {
+			s += "Bar";
+		}
+		
+		if((value / 10) == 5) {
+			s += "Bar";
+		}
+		
+		if((value % 10) == 7) {
+			s += "Qix";
+		}
+		
+		if((value / 10) == 7) {
+			s += "Qix";
+		}
+		
+		if(s.length() == 0) {
+			s = Integer.toString(value);
+		}
+		
+		return s;
+	}
+}
